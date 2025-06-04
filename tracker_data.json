@@ -1,0 +1,26 @@
+{
+    "all_files": [
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102049_techReplicate-1_well-A1_construct-1_experiment-test_replicate-1_passage-26.tif",
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102049_techReplicate-2_well-A1_construct-1_experiment-test_replicate-1_passage-26.tif",
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102050_techReplicate-1_well-A2_construct-1_experiment-test_replicate-2_passage-26.tif",
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102050_techReplicate-1_well-B1_construct-1_experiment-test_replicate-3_passage-26.tif",
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102050_techReplicate-2_well-A2_construct-1_experiment-test_replicate-2_passage-26.tif",
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102050_techReplicate-2_well-B1_construct-1_experiment-test_replicate-3_passage-26.tif",
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102050_techReplicate-3_well-A1_construct-1_experiment-test_replicate-1_passage-26.tif",
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102050_techReplicate-3_well-A2_construct-1_experiment-test_replicate-2_passage-26.tif",
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102050_techReplicate-3_well-B1_construct-1_experiment-test_replicate-3_passage-26.tif",
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102050_techReplicate-4_well-A1_construct-1_experiment-test_replicate-1_passage-26.tif",
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102050_techReplicate-4_well-A2_construct-1_experiment-test_replicate-2_passage-26.tif",
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102050_techReplicate-4_well-B1_construct-1_experiment-test_replicate-3_passage-26.tif",
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102051_techReplicate-1_well-B2_construct-1_experiment-test_replicate-4_passage-26.tif",
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102051_techReplicate-2_well-B2_construct-1_experiment-test_replicate-4_passage-26.tif",
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102051_techReplicate-3_well-B2_construct-1_experiment-test_replicate-4_passage-26.tif",
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102051_techReplicate-4_well-B2_construct-1_experiment-test_replicate-4_passage-26.tif"
+    ],
+    "current_files": [],
+    "failed_files": [
+        "D:\\olympus_images\\test\\test_save\\date-20250124_experiment-102049_techReplicate-1_well-A1_construct-1_experiment-test_replicate-1_passage-26.tif"
+    ],
+    "pipeline_failed": true,
+    "last_run": "2025-02-27 13:48:12.036567"
+}

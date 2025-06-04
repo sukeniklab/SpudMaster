@@ -1,0 +1,50 @@
+#### v0.0.2 ####
+Poor version control
+
+
+#### v0.0.3 ####
+Goals: 
+	1. Testing behavior of noninfection purtabation.
+	2. Quality of life improvements
+	3. Bug fixes
+	4. Full process implementation
+
+Classes
+	Analysis Class:
+		-self.duplicate_image function added: creates a duplicate image in a new subdirectory with a sorted name length to ensure
+		path length doesn't exceed 200
+		-self.remove_tmp_image: deletes new temporary image to prevent over crowding of drive.
+
+	image_handling_class:
+		-fixed bugs with stack_method
+			-Move local variable call to class level.
+				-prevents misuage of variable in lower levels, allows for use of passing a StackReg.registered variable to
+				self.cam2_alignment_register directly to avoid making multiple matrices
+				-allows for the creation pf a function outside of alignment process to give a set of images to align too.
+				-also sets up the class to bring in a batch process function
+
+	Tracker:
+		-fixed bug
+			-wrong local variable that, when called, would cause errors in the analysis class.
+		-Known bug
+			-Create separate directory is still bugged and when passed in the analysis class pipeline, cause a double 
+			count of file errors
+
+
+Functions:
+	Image_handling:
+		fiji_commands:
+			-Reworked the performance of the fiji_commands functions by deleting variables and properly 
+			closing imagePlus objects with save_changes = False
+				-Also added different path try and except variables to keep the loop moving; however Imagej legacy doesn't properly close images fully.
+				-Causes leaked memory accummalation 
+			-Added in check_jvm_memory to ensure memory errors are being freed properly
+
+Python executable attempt
+#### v0.0.3.1 ####
+Goals
+	1. Ostmotic perturbation Behavior (Alignment and Segemntation)
+	2. Better post-segmentation data analysis and plotting
+	3. minor adjustments to classes.
+	
+ 
