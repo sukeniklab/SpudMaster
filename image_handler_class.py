@@ -183,6 +183,7 @@ class ImageAlignmentAndTifConversion:
         # Align images: if a time dimension exists, process each timepoint.
         try:
             if 't' in images.dims:
+                
                 concat_list = []
                 start = datetime.now()
                 for timepoint in range(images.sizes['t']):
@@ -199,25 +200,36 @@ class ImageAlignmentAndTifConversion:
                 print((end - start).total_seconds())
             else:
                 #implement cam2_alignment here
+                if self.cam2_alignment_register == None:    
+                        self.stack_method.register(cur_image_t.isel(ch=0), cur_image_t.isel(ch=1))
+                        self.cam2_alignment_register = self.stack_method
                 aligned_image = image_functions.image_alignment(images, stat_image, excluded_channel, self.cam2_alignment_register)
         except Exception as e:
             raise RuntimeError("Error during image alignment process.") from e
-
+        
+        osmotic_align_failed =False
         
         if self.experiment == 'osmotic':
-            
-            if self.osmotic_holder == None:
-                self.stack_method.register(aligned_image.isel(t=0, ch=0), aligned_image.isel(t=1, ch=0))
-                self.osmotic_holder = self.stack_method
             before_images = aligned_image.isel(t=0)
-            aligning_image = aligned_image.isel(t=1)
-            after_aligned_image = image_functions.align_to_osmo(aligning_image, self.osmotic_holder)
-            aligned_image = xr.concat([before_images, after_aligned_image], dim='t')
+            after_images = aligned_image.isel(t=1)
+            self.stack_method.register(before_images.isel(ch=0), after_images.isel(ch=0))
+            osmotic_register = self.stack_method
+            if not image_functions.check_matrix(osmotic_register):
+                after_aligned_image = image_functions.align_to_osmo(after_images, osmotic_register)
+                aligned_image = xr.concat([before_images, after_aligned_image], dim='t')
+                
+            else:
+                print(f"Unable to align image {image_filename}, will place in failed files")
+                osmotic_align_failed = True
+                
         # Save the aligned image.
         
         
         try:
-            self._save_to_tif(save_directory, aligned_image, tif_save_filename)
+            if not osmotic_align_failed:  
+                self._save_to_tif(save_directory, aligned_image, tif_save_filename)
+            else:
+                self.file_tracker.tracker_data['failed_files'].append(file)
         except Exception as e:
             # Log error in tracker for each file in image_set.
             for file in image_set:

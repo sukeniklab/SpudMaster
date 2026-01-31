@@ -1,8 +1,8 @@
-#### v0.0.2 ####
+#### v0.0.2.0 ####
 Poor version control
 
 
-#### v0.0.3 ####
+#### v0.0.3.0 ####
 Goals: 
 	1. Testing behavior of noninfection purtabation.
 	2. Quality of life improvements
@@ -40,11 +40,113 @@ Functions:
 				-Causes leaked memory accummalation 
 			-Added in check_jvm_memory to ensure memory errors are being freed properly
 
-Python executable attempt
+Still in testing:
+	-Line profile implentation and testing
+Python executable attempted
+Moved away from server implementation for now
+
 #### v0.0.3.1 ####
-Goals
+Goals:
 	1. Ostmotic perturbation Behavior (Alignment and Segemntation)
 	2. Better post-segmentation data analysis and plotting
-	3. minor adjustments to classes.
+	3. Implement plotting functions
+		-Move current set ups into subfunctions
+	4. minor adjustments to classes.
+	5. Finish line profile implementation
+
+Testing on Heatshock: 
+	Functions remain streamlined, haven't changed any experimental parameters in terms of base level processing. 
+	Seems multifunctional for current use cases	
+
+Classes:
 	
- 
+
+Functions:
+	-calculations
+		-processing_cleanup
+			-get_populations_signficance: Edit
+				-Changed == 'Growth to a from set value to comparison value with 
+				default equal to grwoth when no growth population is present in the data frame
+				-Reworked to make the dataframe columns dynamically listed, instead of specified
+			-delta_time: Edit
+				-Added comaprison: an integer to select which timepoint to compare to.
+			
+			-delta_list_median: Edit
+				-Added comparison: an integer to select which timepoint to compare to.
+			-infection_parameters: Function reworked
+				- Now has an upper and lower cutoff local variables.
+					-Enables for dataframe partitioning between three populations, and removal 
+					of mixed_populations
+			-New Functions: 
+				-infection_cutoffs: Performs population cutoffs based upon set values
+					-testing to see if it makes a better argument than simply looking at percentiles
+
+	-plotting
+		-violin_plots
+
+		-bar_graphs
+
+		-timeline_plots
+
+
+#### v0.0.3.2 ####
+Goals:
+	1. Move notebook kernals to python executables.
+	2. Clean up testing notebooks as well
+	3. Move them outside of SpudVersions
+	4. Batch processing
+	5. Alignment assistant function/tool
+	6. Plotting other staticstics
+		-Area vs Efret
+	7. Implement dataclass for Dataprocessing container
+	8. Implement aggregate function data post-processing
+	9. Itertools
+	10. Integrated Dataclasses into alignment tool
+	11. Move pipeline tools into modules.  
+
+#### v0.0.3.3 ####
+Goals:
+	1. Improvements to error handling
+	2. Better Progress tracking
+	3. Implement constants and key class improvements
+	4. Move from pandas to polars
+	5. Create Experiment Working Directory
+	6. Save alignments vs process and delete
+	7. Save Mask to working directory
+	8. Save plots to working directory
+	9. Save dataframe
+
+#### v0.0.3.4 ####
+Goals:
+	1. Save DataArrays instead of images.
+		-Possibly reducing space requirements/reduce reliance on imagej bridge
+	2. Segmentation tools and display
+	
+
+#### v0.0.4.0 ####
+Goals:
+	1. Implementation of a environment yaml
+	2. python executables to run scripts on the command line
+	3. Error logging and process tracking
+	4. Full data processing and cleaning notebooks.
+	5. Adjusting dataclassses to better help processing
+	6. Improve preformance on initiation of classes.
+	7. Reduce class reliance on bulk processing inside classes and move functionality into modules and function calls.  
+	8. FRET heat maps
+	9. init == main() functionality
+	10. Test new versions of torch and cellpose enviornments
+
+#### v0.0.4.1 ####
+	1. Rework segmentation dataclasses and registration of classes
+	2. Reduce class reliance
+	3. Function documentation
+
+#### v0.0.5.0 ####
+Goals:
+	1. Multithreading/Multiprocessing 
+	2. Streamline mask and image segmentation with alignment. 
+		-transfer data between the two classes
+	3. Pipeing operators
+	4. Rust or C implementations to improve processing speeds
+
+#### v0.1.0.0 ####

@@ -322,7 +322,7 @@ class ImageProcessor:
         st = datetime.now()    
         
         if self.experiment == 'osmotic':
-            seg_ch_images = seg_ch_image[0]
+            seg_ch_images = {0: seg_ch_images[0]}
         
         self.image_data_storage.masks = self.__create_masks(seg_ch_images)
         en = datetime.now()
@@ -388,12 +388,12 @@ class ImageProcessor:
                 clear_output(wait=True)
             except ImportError:
                 pass
-            
+        '''    
         if len(self.tracker.get_failed_files()) == 0:
             self.tracker.reset_tracker()
         else: 
             self.tracker.get_failed_files()
-            
+        '''    
         self.tracker.display_progress()
                 
         return self.dataframe_storage.df

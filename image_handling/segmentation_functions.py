@@ -92,7 +92,7 @@ def osmotic_perturbation(mask_dict: Dict[int, np.array or xarray.DataArray],
                    properties: List[str])-> Dict[int, Dict[str, np.array]]:
 
     
-    mask = mask_dict[0]
+    current_mask = mask_dict[0]
     if type(current_mask) == None: 
         return None
         
@@ -100,7 +100,7 @@ def osmotic_perturbation(mask_dict: Dict[int, np.array or xarray.DataArray],
         current_mask = convert_mask(current_mask)
 
     properties_dict = {}
-    for key, dict in image_dict.item():
+    for key, dict in image_dict.items():
         current_image = get_current_frame(image_dict, key)
 
         channel_dict = {}
@@ -111,7 +111,7 @@ def osmotic_perturbation(mask_dict: Dict[int, np.array or xarray.DataArray],
             # Compute region properties for the current channel using the mask and image channel.
             try:
                 props = ski.measure.regionprops_table(
-                    mask, 
+                    current_mask, 
                     intensity_image=image_channel, 
                     properties=properties
                 )

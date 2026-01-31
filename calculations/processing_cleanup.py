@@ -186,9 +186,60 @@ def remove_outliers(df, group_values, check_column='Efret', sub_groupers= ['date
     filtered_df = pd.concat(filtered_dfs, ignore_index=True)
     filtered_df = filtered_df.reset_index(drop=True)
     return filtered_df
-    
-def get_stats(df, group_values, stats= ['mean', 'median', 'min', 'max', 'std', 'count', 'var', 'list'] , stat_column='Efret', observed=True, as_index=False):
+
+
+def get_stats(
+        df: pd.DataFrame,
+        group_values: list,
+        stats: tuple =('mean', 'median', 'min', 'max', 'std', 'count', 'var', 'list'),
+        stat_column: str='Efret',
+        observed:bool =True,
+        as_index: bool=False,
+        append_all_values:bool =True   
+) -> pd.DataFrame():
     """
+    Compute descriptive statistics on *stat_column* after grouping by *group_values*.
+
+    Returns one column per requested statistic, named "<stat_column>_<stat>".
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+    group_values : list[str]
+        Column names to group by.
+    stats : iterable[str]
+        Any subset of {'mean','median','min','max','std','count','var','list'}.
+    stat_column : str
+        Column on which to compute the stats.
+    observed, as_index : passed straight to DataFrame.groupby.
+    append_all_values : bool
+        If True, always add the `<stat_column>_list` column (even if
+        'list' is not in *stats*).
+    """
+    stats = list(stats)  # ensure it is iterable
+
+    # One-shot aggregation; pandas will return a DataFrame
+    grouped = df.groupby(group_values, observed=observed, as_index=as_index)[stat_column]
+    stat_funcs = [list if s == 'list' else s for s in stats]
+    agg_df = grouped.agg(stat_funcs)
+    # Rename columns (resulting column names from agg will be tuples if multiple functions)
+    
+    new_columns = {stat: stat_column+'_'+stat for stat in stats}
+    
+    agg_df = agg_df.rename(columns = new_columns)
+
+    # Add back grouping columns explicitly if as_index=False (to ensure full mergeability)
+    if not as_index:
+        group_keys_df = df[group_values].drop_duplicates()
+        result_df = pd.merge(group_keys_df, agg_df, left_on=group_values, right_on=group_values)
+    else:
+        result_df = agg_df
+
+    return result_df
+
+"""
+def get_stats(df, group_values, stats= ['mean', 'median', 'min', 'max', 'std', 'count', 'var', 'list'] , stat_column='Efret', observed=True, as_index=False):
+    '''
     Compute specified statistics for a given column after grouping by specified columns.
 
     Parameters:
@@ -202,7 +253,7 @@ def get_stats(df, group_values, stats= ['mean', 'median', 'min', 'max', 'std', '
 
     Returns:
     - pd.DataFrame: DataFrame with the computed statistics.
-    """
+    '''
     if type(stats) != list:
         stats = [stats]
     grouped_data = df.groupby(group_values, observed=observed, as_index=as_index)[stat_column]
@@ -220,7 +271,7 @@ def get_stats(df, group_values, stats= ['mean', 'median', 'min', 'max', 'std', '
                 
     
     init_df = None
-    
+
     for stat in stats:
         tmp_data = stats_dic[stat]
         if type(init_df) != pd.DataFrame:
@@ -234,14 +285,14 @@ def get_stats(df, group_values, stats= ['mean', 'median', 'min', 'max', 'std', '
 
     init_df = init_df.reset_index(drop=True)
     return init_df
-
-def delta_time(df, delta_column, group_values=['construct', 'experiment'], comparison: int = 1):
+"""    
+def delta_time(df, delta_column='Efret_median', comparison_column = 'Efret_median', group_values=['construct', 'experiment'], comparison: int = 1):
     df_copy = df.copy()
 
     if df_copy[delta_column].dtype == list:
         
         df_copy[delta_column] = df_copy[delta_column].apply(np.array)
-        df_copy['delta_'+delta_column] = df_copy[delta_column] - df_copy.groupby(group_values, observed=False)['Efret_median'].transform(lambda x: x.iloc[comparison])
+        df_copy['delta_'+delta_column] = df_copy[delta_column] - df_copy.groupby(group_values, observed=False)[comparison_column].transform(lambda x: x.iloc[comparison])
     
     else:    
     
@@ -250,17 +301,17 @@ def delta_time(df, delta_column, group_values=['construct', 'experiment'], compa
 
     return df_copy
 
-def delta_list_median(df, delta_df, delta_column, group_values=['construct', 'experiment'], comparison: int =1):
+def delta_list_median(df, delta_df, delta_column, comparison_column = 'Efret_median', group_values=['construct', 'experiment'], comparison: int =1):
     df_copy = df.copy()
     df_copy[delta_column] = df_copy[delta_column].apply(np.array)
 
     # Use nth(1) safely
     delta_medians = (
-        delta_df.groupby(group_values, observed=False)['Efret_median']
+        delta_df.groupby(group_values, observed=False)[comparison_column]
         .apply(lambda x: x.iloc[comparison] if len(x) > 1 else np.nan)
         .reset_index()
     )
-    delta_medians.rename(columns={'Efret_median': 'Efret_median_delta'}, inplace=True)
+    delta_medians.rename(columns={comparison_column: 'Efret_median_delta'}, inplace=True)
 
 
     # Merge the median values onto df_copy based on group_values
@@ -305,14 +356,14 @@ def delta_list_median(df, delta_df, delta_column, group_values= ['construct', 'e
     return df_copy
 """    
 
-def remove_controls(df, control_1 = 'mTQ2', control_2='mNG'):
+def remove_controls(df, control_1: str = 'mTQ2', control_2: str='mNG'):
     return df.loc[(df['construct']!= control_1) & (df['construct']!=control_2)]
 
-def drop_counts(df, count=20):
-    df = df.loc[df['Efret_count'] > count]
+def drop_counts(df, count_column = 'Efret_count', count=20):
+    df = df.loc[df[count_column] > count]
     return df.reset_index(drop=True)
 
-
+"""
 def get_population_significance(df, group_values, sign_column='Efret_median', observed=False,
                                  as_index=False, equal_var=True, nan_policy='propagate',
                                  comparison_value='Growth', comparison_column='experimentparameter'):
@@ -353,3 +404,45 @@ def get_population_significance(df, group_values, sign_column='Efret_median', ob
         sign_df = pd.concat([sign_df, pd.DataFrame([result])], ignore_index=True)
 
     return sign_df
+"""
+def get_population_significance(df, group_values, sign_column='Efret_median', observed=False,
+                                 as_index=False, equal_var=True, nan_policy='propagate',
+                                 comparison_value='Growth', comparison_column='experimentparameter'):
+    
+    groupby_df = df.groupby(group_values, observed=observed, as_index=as_index)
+    sign_df = pd.DataFrame()
+    comparison_population = None  # Store this globally so other groups can compare to it
+
+    for group_key, group_data in groupby_df:
+        # Convert group_key to dict using group_values
+        group_dict = dict(zip(group_values, group_key if isinstance(group_key, tuple) else (group_key,)))
+
+        # Extract comparison value
+        current_comp_val = group_data[comparison_column].unique()[0]
+
+        # If this group is the comparison group
+        if current_comp_val == comparison_value:
+            comparison_population = group_data[sign_column].values
+            ttest, pvalue, star = 'NaN', 'NaN', 'ns'
+        else:
+            if comparison_population is None:
+                raise ValueError(f"Comparison population for '{comparison_value}' not found before other group.")
+            variable_population = group_data[sign_column].values
+            ttest, pvalue = stats.ttest_ind(comparison_population, variable_population,
+                                            nan_policy=nan_policy)
+            star = set_pvalue(pvalue)
+
+        # Build result dictionary
+        result = {k: group_dict[k] for k in group_values}
+        result.update({
+            comparison_column: current_comp_val,
+            'ttest': ttest,
+            'pvalue': pvalue,
+            'star_value': star
+        })
+
+        # Append to result dataframe
+        sign_df = pd.concat([sign_df, pd.DataFrame([result])], ignore_index=True)
+
+    return sign_df
+

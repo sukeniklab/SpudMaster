@@ -2,6 +2,10 @@ import xarray
 import numpy as np
 from pystackreg import StackReg as sr
 
+#check_matrix parameters
+MAX_PIXEL_TRANS = 100
+MAX_ROT = 0.5
+
 def is_image_empty(img: xarray.DataArray or np.array, pixels_to_count: int = 10000, background_threshold: float = 3.0) -> bool:
     """
     Determine if an image is "empty" by analyzing the intensity difference between 
@@ -208,6 +212,17 @@ def image_alignment(image_array: xarray.DataArray, stationary_channel: int, alig
     return aligned_images
 
 
+def check_matrix(stack_method, allowed_trans=MAX_PIXEL_TRANS, allowed_rotation=MAX_ROT):
+
+    matrix = stack_method.get_matrix()
+    
+    rotation = np.arccos(matrix[0, 0])
+    translation = np.linalg.norm(matrix[:, 2])  # sqrt(tx^2 + ty^2)
+    
+    MAX_ALLOWED_TRANSLATION =  allowed_trans # pixels
+    MAX_ALLOWED_ROTATION = np.deg2rad(allowed_rotation)  # degrees converted to radians
+    
+    return True if translation > MAX_ALLOWED_TRANSLATION or abs(rotation) > MAX_ALLOWED_ROTATION else False
 
 '''
 def image_alignment(image_array: xarray.DataArray, stationary_channel:int, excluded_channels: list[int], 
@@ -291,7 +306,7 @@ def align_to_osmo(image_set, alignment_method):
     return aligned_images
 '''
 
-def align_to_osmo(image_set, alignment_method):
+def align_to_osmo(image_set, stack_method):
     """
     Aligns each channel in the image_set using the provided alignment_method.
 
@@ -308,12 +323,7 @@ def align_to_osmo(image_set, alignment_method):
 
     required_dims = ['row', 'col', 'ch']  # Required for reshaping
 
-    realigned_list = []
-    for index in range(image_set.sizes['ch']):
-        current_img = image_set.isel(ch=index)
-        registered_image = alignment_method.transform(current_img)  #Assumes transform returns numpy or array-like
-        realigned_list.append(xarray.DataArray(registered_image, dims=current_img.dims, coords=current_img.coords))
-
+    realigned_list = [xarray.DataArray(stack_method.transform(image_set.isel(ch=index)),  dims= image_set.isel(ch=index).dims, coords=image_set.isel(ch=index).coords) for index in range(image_set.sizes['ch'])]
     aligned_images = xarray.concat(realigned_list, dim='ch')
     aligned_images = reshape_image(aligned_images, new_dim_list=required_dims)  #Assumes reshape_image handles dimension order
 

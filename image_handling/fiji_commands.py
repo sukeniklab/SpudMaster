@@ -136,3 +136,31 @@ def concat_xarrays(ij, image_list: list) -> xarray.DataArray:
             tmp_xarr = xarray.concat([tmp_xarr, tmp], dim="ch")
 
     return tmp_xarr
+
+
+def concat_multiple_images(ij, image_list, channel=[0,1], timepoint=[0]):
+    """
+    Concatenates multiple images to enable easier plotting mechanics
+
+    ij: imagej instance
+    image_list: list of images to concatenate
+    channel: List of channels to cycle and concatenate
+    timepoints: list of timepoints to cycle and concatenate
+    """
+    concat_image = []
+    for image in image_list:
+        
+        img = fiji_commands.read_images_to_python(ij, image)
+        if 't' in img.dims:
+            time_images = {x: img.isel(t=x) for x in timepoint}
+        else:
+            time_images = {0: img}
+
+        
+        concat_image.append(xarray.concat([xarray.concat([item.isel(ch=ch) for ch in channel], dim='ch') if 'ch' in item.dims else item for key, item in time_images.items()], dim='t'))
+    new_image = xarray.concat(concat_image, dim='img')    
+    return new_image
+
+
+
+
